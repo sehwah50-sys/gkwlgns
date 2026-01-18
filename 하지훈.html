@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>하지훈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        #background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+            max-width: 80%;
+            text-align: center;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 20px solid white;
+        }
+
+        .speech-bubble.angry {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .speech-bubble.angry::after {
+            border-top-color: #ff6b6b;
+        }
+
+        .speech-bubble.sweet {
+            background: #ffe0f0;
+            color: #ff1493;
+        }
+
+        .speech-bubble.sweet::after {
+            border-top-color: #ffe0f0;
+        }
+    </style>
+</head>
+<body>
+    <img id="background" src="gkwlgns.jpg" alt="배경">
+    
+    <div id="speechBubble" class="speech-bubble"></div>
+
+    <script>
+        const bubble = document.getElementById('speechBubble');
+        let timeoutId;
+
+        // 이미지 업로드를 위한 안내
+        console.log('배경 이미지를 바꾸려면 src 속성을 수정하세요');
+
+        document.body.addEventListener('click', (e) => {
+            // 기존 말풍선 제거
+            bubble.classList.remove('show', 'angry', 'sweet');
+            clearTimeout(timeoutId);
+
+            // 랜덤 확률 (90% 돈내놔, 10% 자기야)
+            const random = Math.random();
+            let message, className;
+
+            if (random < 0.9) {
+                // 90% 확률
+                message = '돈내놔';
+                className = 'angry';
+            } else {
+                // 10% 확률
+                message = '자기야 지훈이가 힘들어?';
+                className = 'sweet';
+            }
+
+            // 말풍선 위치 설정 (클릭한 위치 위쪽)
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            bubble.textContent = message;
+            bubble.className = `speech-bubble ${className}`;
+            bubble.style.left = x + 'px';
+            bubble.style.top = (y - 100) + 'px';
+            bubble.style.transform = 'translateX(-50%) scale(0.5)';
+
+            // 화면 밖으로 나가지 않게 조정
+            setTimeout(() => {
+                const rect = bubble.getBoundingClientRect();
+                if (rect.left < 10) {
+                    bubble.style.left = (rect.width / 2 + 10) + 'px';
+                }
+                if (rect.right > window.innerWidth - 10) {
+                    bubble.style.left = (window.innerWidth - rect.width / 2 - 10) + 'px';
+                }
+                if (rect.top < 10) {
+                    bubble.style.top = '80px';
+                }
+            }, 10);
+
+            // 애니메이션 시작
+            setTimeout(() => {
+                bubble.classList.add('show');
+            }, 10);
+
+            // 2초 후 사라지기
+            timeoutId = setTimeout(() => {
+                bubble.classList.remove('show');
+            }, 2000);
+        });
+
+        // 실제 이미지 사용 방법 (파일 업로드)
+        // HTML 파일과 같은 폴더에 이미지를 넣고 아래처럼 수정하세요:
+        // <img id="background" src="your-image.jpg" alt="배경">
+    </script>
+</body>
+</html>
